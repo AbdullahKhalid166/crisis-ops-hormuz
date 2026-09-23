@@ -1,0 +1,194 @@
+@import "@fontsource/ibm-plex-sans/400.css";
+@import "@fontsource/ibm-plex-sans/500.css";
+@import "@fontsource/ibm-plex-sans/600.css";
+@import "@fontsource/ibm-plex-mono/400.css";
+@import "@fontsource/ibm-plex-mono/500.css";
+@import "@fontsource/ibm-plex-mono/600.css";
+@import "tailwindcss";
+
+:root {
+  --topbar-height: 50px;
+  --left-rail-width: 300px;
+  --left-rail-collapsed-width: 56px;
+  --vessel-card-width: 320px;
+  --timeline-height: 48px;
+  --timeline-bottom-offset: 14px;
+  --current-rail-width: 300px;
+  --right-reserved-width: 0px;
+}
+
+html {
+  font-family: 'IBM Plex Sans', sans-serif;
+  font-size: 14px;
+  line-height: 1.4;
+  background-color: #f4f6f8;
+  color: #111827;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  font-family: 'IBM Plex Sans', sans-serif;
+  font-size: 14px;
+  line-height: 1.4;
+  background-color: #f4f6f8;
+  color: #111827;
+  margin: 0;
+  padding: 0;
+}
+
+button, input, select, textarea {
+  font: inherit;
+}
+
+/* Monospace & Tabular figures */
+.font-mono, [data-mono="true"] {
+  font-family: 'IBM Plex Mono', monospace !important;
+  font-feature-settings: "tnum" 1;
+}
+
+.tabular-nums {
+  font-feature-settings: "tnum" 1;
+}
+
+/* Strict Typography tokens */
+.section-label {
+  font-size: 11px !important;
+  font-weight: 600 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.06em !important;
+  color: #6b7280 !important;
+  line-height: 1.4 !important;
+}
+
+.stat-value {
+  font-size: 24px !important;
+  font-weight: 600 !important;
+  font-family: 'IBM Plex Mono', monospace !important;
+  font-feature-settings: "tnum" 1;
+  line-height: 1.2 !important;
+}
+
+.vessel-name {
+  font-size: 16px !important;
+  font-weight: 600 !important;
+  line-height: 1.3 !important;
+}
+
+/* 150ms smooth micro-transitions */
+button, input, select, textarea, a, .transition-editorial {
+  transition-property: opacity, border-color, background-color, color, transform, box-shadow;
+  transition-duration: 150ms;
+  transition-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, ::before, ::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Clean Marine Scrollbar */
+::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+::-webkit-scrollbar-track {
+  background: #f4f6f8;
+}
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+/* Leaflet Map Light Base Override */
+.leaflet-container {
+  background: #b5d0d0 !important;
+  font-family: 'IBM Plex Sans', sans-serif !important;
+}
+
+.leaflet-popup-content-wrapper {
+  background: #ffffff !important;
+  color: #111827 !important;
+  border: 1px solid #e3e7ec !important;
+  border-radius: 6px !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08) !important;
+  padding: 0 !important;
+}
+
+.leaflet-popup-content {
+  margin: 10px 14px !important;
+  font-family: 'IBM Plex Sans', sans-serif !important;
+  font-size: 12px !important;
+  line-height: 1.4 !important;
+}
+
+.leaflet-popup-tip {
+  background: #ffffff !important;
+  box-shadow: none !important;
+}
+
+.leaflet-control-zoom {
+  border: 1px solid #e3e7ec !important;
+  border-radius: 6px !important;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08) !important;
+  overflow: hidden;
+}
+
+.leaflet-control-zoom a {
+  background: #ffffff !important;
+  color: #374151 !important;
+  border-bottom: 1px solid #e3e7ec !important;
+  width: 28px !important;
+  height: 28px !important;
+  line-height: 26px !important;
+  font-family: 'IBM Plex Sans', sans-serif !important;
+  font-size: 14px !important;
+}
+
+.leaflet-control-zoom a:hover {
+  background: #f8fafc !important;
+  color: #111827 !important;
+}
+
+.leaflet-control-attribution {
+  background: rgba(255, 255, 255, 0.88) !important;
+  color: #64748b !important;
+  font-size: 10px !important;
+  font-family: 'IBM Plex Sans', sans-serif !important;
+  padding: 2px 6px !important;
+  border-top-left-radius: 4px;
+}
+.leaflet-control-attribution a {
+  color: #2563eb !important;
+  text-decoration: none;
+}
+.leaflet-control-attribution a:hover {
+  text-decoration: underline;
+}
+
+/* Distressed ship pulse animation */
+@keyframes distressed-ring-pulse {
+  0% {
+    transform: scale(0.9);
+    opacity: 0.95;
+  }
+  50% {
+    transform: scale(1.38);
+    opacity: 0.3;
+  }
+  100% {
+    transform: scale(0.9);
+    opacity: 0.95;
+  }
+}
+
+.distressed-ring-pulse {
+  animation: distressed-ring-pulse 1.8s ease-in-out infinite;
+}

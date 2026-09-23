@@ -1,0 +1,8 @@
+{
+  "name": "Crisis Ops – Strait of Hormuz Fleet Command",
+  "description": "Tactical maritime crisis operations command for 15 commercial cargo vessels navigating the Strait of Hormuz, Persian Gulf, and Gulf of Oman.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
