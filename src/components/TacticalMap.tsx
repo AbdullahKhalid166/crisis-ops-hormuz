@@ -74,6 +74,7 @@ export const TacticalMap: React.FC<TacticalMapProps> = ({
   const [legendOpen, setLegendOpen] = useState(false);
   const [showZoneManager, setShowZoneManager] = useState(false);
   const legendRef = useRef<HTMLDivElement>(null);
+  const zoneManagerRef = useRef<HTMLDivElement>(null);
 
   // Interpolator
   const interpolatorRef = useRef<FleetInterpolator>(new FleetInterpolator());
@@ -109,6 +110,28 @@ export const TacticalMap: React.FC<TacticalMapProps> = ({
       document.removeEventListener('touchstart', handlePointerDown);
     };
   }, [legendOpen]);
+
+  useEffect(() => {
+    if (!showZoneManager) return;
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setShowZoneManager(false);
+    };
+    const handlePointerDown = (e: MouseEvent | TouchEvent) => {
+      if (zoneManagerRef.current && !zoneManagerRef.current.contains(e.target as Node)) {
+        setShowZoneManager(false);
+      }
+    };
+
+    document.addEventListener('keydown', handleKeyDown);
+    document.addEventListener('mousedown', handlePointerDown);
+    document.addEventListener('touchstart', handlePointerDown);
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown);
+      document.removeEventListener('mousedown', handlePointerDown);
+      document.removeEventListener('touchstart', handlePointerDown);
+    };
+  }, [showZoneManager]);
 
   // 1. Initialize Map with keyless Esri tiles & attribution
   useEffect(() => {
@@ -737,6 +760,7 @@ export const TacticalMap: React.FC<TacticalMapProps> = ({
       {/* Command Floating Zone Drawing Toolbar positioned past the left rail */}
       {role === 'command' && (
         <div
+          ref={zoneManagerRef}
           style={{ left: 'calc(var(--current-rail-width, 300px) + 16px)' }}
           className="absolute top-3 z-[1000] flex items-center space-x-2 transition-all duration-150"
         >
@@ -747,7 +771,7 @@ export const TacticalMap: React.FC<TacticalMapProps> = ({
                   setIsDrawing(true);
                   setDrawingPoints([]);
                 }}
-                className="flex items-center space-x-1.5 px-3 py-1 bg-amber-500 hover:bg-amber-600 text-slate-950 text-xs font-bold rounded transition-editorial cursor-pointer shadow-xs"
+                className="h-8 flex items-center space-x-1.5 px-3 bg-amber-500 hover:bg-amber-600 text-slate-950 text-xs font-bold rounded transition-editorial cursor-pointer shadow-xs"
               >
                 <Plus size={13} />
                 <span>Draw Zone</span>
@@ -755,7 +779,7 @@ export const TacticalMap: React.FC<TacticalMapProps> = ({
 
               <button
                 onClick={() => setShowZoneManager((prev) => !prev)}
-                className="flex items-center space-x-1 px-2.5 py-1 text-slate-700 hover:text-slate-900 hover:bg-slate-100 text-xs font-medium rounded transition-editorial cursor-pointer"
+                className="h-8 flex items-center space-x-1 px-2.5 text-xs text-slate-700 hover:text-slate-900 hover:bg-slate-100 font-medium rounded transition-editorial cursor-pointer"
                 title="Manage active exclusion zones"
               >
                 <AlertTriangle size={13} className="text-red-500" />
@@ -786,9 +810,9 @@ export const TacticalMap: React.FC<TacticalMapProps> = ({
 
           {/* Quick Zone Manager Dropdown */}
           {showZoneManager && !isDrawing && (
-            <div className="absolute top-10 left-0 w-64 bg-white border border-slate-200 rounded-lg shadow-xl p-2.5 z-50 space-y-2">
-              <div className="flex justify-between items-center pb-1 border-b border-slate-100">
-                <span className="section-label text-slate-800">Restricted Zones</span>
+            <div className="absolute top-full mt-2 left-0 w-[280px] bg-white border border-slate-200 rounded-lg shadow-xl p-3 z-[1100] space-y-2">
+              <div className="flex justify-between items-center pb-2 border-b border-slate-100">
+                <span className="text-[12px] font-semibold text-slate-800">Restricted zones ({zones.length})</span>
                 <button
                   onClick={() => setShowZoneManager(false)}
                   className="text-slate-400 hover:text-slate-700"
@@ -798,7 +822,7 @@ export const TacticalMap: React.FC<TacticalMapProps> = ({
               </div>
 
               {zones.length === 0 ? (
-                <p className="text-[11px] text-slate-500 py-2 text-center">No zones created.</p>
+                <p className="text-[12px] text-slate-500 py-2 text-center">No zones yet. Use Draw Zone to add one.</p>
               ) : (
                 <div className="space-y-1.5 max-h-48 overflow-y-auto">
                   {zones.map((z) => (
@@ -808,7 +832,7 @@ export const TacticalMap: React.FC<TacticalMapProps> = ({
                     >
                       <div className="truncate pr-1">
                         <div className="font-medium text-slate-900 truncate">{z.name}</div>
-                        <div className="text-[10px] text-slate-500 truncate">{z.reason}</div>
+                        <div className="text-[10px] text-slate-500 truncate">{z.polygon.length} vertices</div>
                       </div>
                       <button
                         onClick={() => onDeleteZone(z.id)}

@@ -51,6 +51,8 @@ export default function App() {
 
   // Dismissed stack alerts from map view
   const [dismissedStackAlertIds, setDismissedStackAlertIds] = useState<Set<string>>(new Set());
+  const [visuallyDismissedToastIds, setVisuallyDismissedToastIds] = useState<Set<string>>(new Set());
+  const [isAlertMenuOpen, setIsAlertMenuOpen] = useState(false);
 
   // Playback state
   const [isLive, setIsLive] = useState<boolean>(true);
@@ -80,12 +82,23 @@ export default function App() {
     }
   }, [role, captainShipId]);
 
+  useEffect(() => {
+    const timers = alerts
+      .filter((alert) => alert.state === 'active' && !visuallyDismissedToastIds.has(alert.id))
+      .map((alert) =>
+        window.setTimeout(() => {
+          setVisuallyDismissedToastIds((prev) => new Set([...prev, alert.id]));
+        }, 8000)
+      );
+    return () => timers.forEach((timer) => window.clearTimeout(timer));
+  }, [alerts, visuallyDismissedToastIds]);
+
   // Selected ship object
   const selectedShip = fleet.find((s) => s.shipId === selectedShipId) || null;
 
   // Active critical & high alerts for the compact stack on the map
   const topActiveAlerts = alerts
-    .filter((a) => a.state === 'active' && !dismissedStackAlertIds.has(a.id))
+    .filter((a) => a.state === 'active' && !dismissedStackAlertIds.has(a.id) && !visuallyDismissedToastIds.has(a.id))
     .slice(0, 3);
 
   // CSS variables calculated for dynamic offsets across widths 1024, 1280, 1440, 1920
@@ -134,6 +147,7 @@ export default function App() {
           setActiveTab('alerts');
           if (isMobile) setMobileSheet('context');
         }}
+        onAlertMenuVisibilityChange={setIsAlertMenuOpen}
       />
 
       {/* Main Map-First Workspace */}
@@ -179,15 +193,12 @@ export default function App() {
         )}
 
         {/* Compact Alert Stack at Top-Right of Map (Shifts left when vessel card is open so it NEVER overlaps) */}
-        {topActiveAlerts.length > 0 && !isMobile && (
+        {topActiveAlerts.length > 0 && !isMobile && !isAlertMenuOpen && (
           <div
             style={{
-              right: isVesselCardOpen
-                ? 'calc(var(--vessel-card-width, 320px) + 24px)'
-                : '16px',
-              top: lastServerAlert ? '112px' : '52px',
+              top: '72px',
             }}
-            className="absolute z-[1000] w-72 space-y-2 pointer-events-auto transition-all duration-150"
+            className="fixed left-1/2 -translate-x-1/2 z-[1400] w-[360px] space-y-2 pointer-events-auto transition-all duration-150"
           >
             {topActiveAlerts.map((alert) => {
               const isCritical = alert.priority === 'CRITICAL';

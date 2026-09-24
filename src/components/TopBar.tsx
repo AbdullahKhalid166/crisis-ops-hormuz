@@ -37,6 +37,7 @@ interface TopBarProps {
   onAcknowledgeAlert: (alertId: string) => void;
   onResolveAlert: (alertId: string) => void;
   onOpenAlertsTab: () => void;
+  onAlertMenuVisibilityChange?: (isOpen: boolean) => void;
 }
 
 export const TopBar: React.FC<TopBarProps> = ({
@@ -55,10 +56,15 @@ export const TopBar: React.FC<TopBarProps> = ({
   onAcknowledgeAlert,
   onResolveAlert,
   onOpenAlertsTab,
+  onAlertMenuVisibilityChange,
 }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isAlertMenuOpen, setIsAlertMenuOpen] = useState(false);
+  const setAlertMenuOpen = (isOpen: boolean) => {
+    setIsAlertMenuOpen(isOpen);
+    onAlertMenuVisibilityChange?.(isOpen);
+  };
 
   // Captain vessel popover state
   const [isCaptainPopoverOpen, setIsCaptainPopoverOpen] = useState(false);
@@ -159,7 +165,7 @@ export const TopBar: React.FC<TopBarProps> = ({
         setIsSearchOpen(false);
       }
       if (alertMenuRef.current && !alertMenuRef.current.contains(e.target as Node)) {
-        setIsAlertMenuOpen(false);
+        setAlertMenuOpen(false);
       }
       if (
         captainPopoverRef.current &&
@@ -172,7 +178,7 @@ export const TopBar: React.FC<TopBarProps> = ({
     function handleKeyDown(e: KeyboardEvent) {
       if (e.key === 'Escape') {
         setIsSearchOpen(false);
-        setIsAlertMenuOpen(false);
+        setAlertMenuOpen(false);
         setIsCaptainPopoverOpen(false);
         setIsFleetHovered(false);
       }
@@ -620,7 +626,7 @@ export const TopBar: React.FC<TopBarProps> = ({
       {/* 5. ALERT BELL (Fixed 40px wide, 40px tall in both roles) */}
       <div className="w-10 h-10 relative shrink-0" ref={alertMenuRef}>
         <button
-          onClick={() => setIsAlertMenuOpen((prev) => !prev)}
+          onClick={() => setAlertMenuOpen(!isAlertMenuOpen)}
           className={`w-10 h-10 rounded-lg transition-editorial flex items-center justify-center cursor-pointer border shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400 active:scale-[0.96] ${
             activeAlerts.length > 0
               ? criticalCount > 0
@@ -645,35 +651,26 @@ export const TopBar: React.FC<TopBarProps> = ({
 
         {/* Alert Dropdown */}
         {isAlertMenuOpen && (
-          <div className="absolute right-0 top-12 w-80 md:w-96 bg-white text-[#111827] rounded-lg shadow-2xl border border-slate-200 z-50 overflow-hidden">
-            <div className="px-4 py-2.5 bg-slate-50 border-b border-slate-200 flex items-center justify-between">
+          <div className="absolute right-0 top-12 w-[320px] bg-white text-[#111827] rounded-lg shadow-2xl border border-slate-200 z-[1400] overflow-hidden">
+            <div className="px-2.5 py-2.5 bg-slate-50 border-b border-slate-200 flex items-center justify-between">
               <div className="flex items-center space-x-2">
-                <span className="font-semibold text-xs text-slate-900">Maritime Alerts</span>
+                <span className="font-semibold text-[12px] text-slate-900">Maritime Alerts</span>
                 {criticalCount > 0 && (
                   <span className="px-1.5 py-0.2 rounded text-[10px] font-bold bg-red-100 text-red-700">
                     {criticalCount} Critical
                   </span>
                 )}
               </div>
-              <button
-                onClick={() => {
-                  onOpenAlertsTab();
-                  setIsAlertMenuOpen(false);
-                }}
-                className="text-[11px] text-indigo-600 hover:text-indigo-800 font-medium"
-              >
-                View in Panel
-              </button>
             </div>
 
-            <div className="max-h-72 overflow-y-auto divide-y divide-slate-100">
+            <div className="max-h-[60vh] overflow-y-auto divide-y divide-slate-100">
               {activeAlerts.length === 0 ? (
                 <div className="p-4 text-center text-slate-500 text-xs">
                   No active maritime alerts
                 </div>
               ) : (
                 activeAlerts.map((alert) => (
-                  <div key={alert.id} className="p-3 hover:bg-slate-50 transition-editorial">
+                  <div key={alert.id} className="p-2.5 hover:bg-slate-50 transition-editorial">
                     <div className="flex items-start justify-between">
                       <span
                         className={`px-1.5 py-0.5 rounded text-[10px] font-bold uppercase ${
@@ -686,7 +683,7 @@ export const TopBar: React.FC<TopBarProps> = ({
                       >
                         {alert.priority}
                       </span>
-                      <span className="text-[10px] text-slate-400 font-mono">
+                      <span className="text-[11px] text-slate-400 font-mono">
                         {new Date(alert.createdAt).toLocaleTimeString([], {
                           hour: '2-digit',
                           minute: '2-digit',
@@ -694,24 +691,24 @@ export const TopBar: React.FC<TopBarProps> = ({
                         })}
                       </span>
                     </div>
-                    <p className="text-xs font-semibold text-slate-900 mt-1 leading-snug">
+                    <p className="text-[12px] font-medium text-slate-900 mt-1 leading-[1.35]">
                       {alert.message}
                     </p>
                     <div className="flex items-center justify-between mt-2 pt-1 border-t border-slate-100">
-                      <span className="text-[10px] text-slate-500 font-mono">
+                      <span className="text-[11px] text-slate-500 font-mono">
                         Vessels: {alert.shipIds?.join(', ') || 'Global'}
                       </span>
                       <div className="flex space-x-1">
                         <button
                           onClick={() => onAcknowledgeAlert(alert.id)}
-                          className="px-2 py-0.5 text-[10px] font-medium rounded border border-slate-300 hover:bg-slate-100 text-slate-700"
+                          className="h-7 px-2.5 text-xs font-medium rounded border border-slate-300 hover:bg-slate-100 text-slate-700"
                         >
                           Ack
                         </button>
                         {role === 'command' && (
                           <button
                             onClick={() => onResolveAlert(alert.id)}
-                            className="px-2 py-0.5 text-[10px] font-medium rounded bg-slate-900 hover:bg-slate-800 text-white"
+                            className="h-7 px-2.5 text-xs font-medium rounded bg-slate-900 hover:bg-slate-800 text-white"
                           >
                             Resolve
                           </button>
