@@ -1,0 +1,14 @@
+services:
+  fleet-command:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        MAPBOX_TOKEN: ${MAPBOX_TOKEN}
+        VITE_MAPBOX_TOKEN: ${MAPBOX_TOKEN}
+    ports:
+      - "4173:4173"
+    environment:
+      PORT: 4173
+      NODE_ENV: production
+      GEMINI_API_KEY: ${GEMINI_API_KEY:-}
