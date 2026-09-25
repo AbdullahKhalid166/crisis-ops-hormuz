@@ -24,7 +24,7 @@ Defined in `.env` (refer to `.env.example`):
 | Variable | Description | Required | Default |
 | :--- | :--- | :--- | :--- |
 | `GEMINI_API_KEY` | Google Gemini API Key for distress report analysis | No (optional) | Fallback parser used |
-| `PORT` | HTTP & WebSocket server port | No | `3000` |
+| `PORT` | HTTP & WebSocket server port | No | `4173` |
 | `NODE_ENV` | Environment mode (`development` or `production`) | No | `development` |
 | `APP_URL` | Application base URL | No | Dynamic |
 
@@ -37,11 +37,11 @@ Defined in `.env` (refer to `.env.example`):
 # 1. Install dependencies
 npm install
 
-# 2. Run full-stack development server (Express + Vite middlewares on port 3000)
+# 2. Run full-stack development server (Express + Vite middlewares on port 4173)
 npm run dev
 
 # 3. Access in browser
-http://localhost:3000
+http://localhost:4173
 ```
 
 ### Option B: Docker Compose
@@ -50,7 +50,7 @@ http://localhost:3000
 docker compose up --build
 
 # Access in browser
-http://localhost:3000
+http://localhost:4173
 ```
 
 ---
