@@ -1,0 +1,22 @@
+FROM node:22-alpine
+
+WORKDIR /app
+
+ARG MAPBOX_TOKEN
+ARG VITE_MAPBOX_TOKEN
+
+ENV MAPBOX_TOKEN=$MAPBOX_TOKEN
+ENV VITE_MAPBOX_TOKEN=$VITE_MAPBOX_TOKEN
+ENV NODE_ENV=production
+ENV PORT=4173
+
+COPY package.json bun.lock ./
+RUN npm install
+
+COPY . .
+
+RUN npm run build
+
+EXPOSE 4173
+
+CMD ["npm", "start"]
